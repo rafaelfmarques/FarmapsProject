@@ -4,50 +4,67 @@ import {
     TextInput, Image,
     TouchableOpacity, StyleSheet
 } from 'react-native';
+import auth from '@react-native-firebase/auth';
 
-import {
-    GoogleSignin,
-    GoogleSigninButton,
-    statusCodes,
-} from '@react-native-community/google-signin';
-
-export default function Login({navigation}) {
+export default function Login({ navigation }) {
     const [email, setEmail] = useState('')
     const [senha, setSenha] = useState('')
-    
-    useEffect(() => {
-        GoogleSignin.configure({
-            scopes: ['https://www.googleapis.com/auth/drive.readonly'], // what API you want to access on behalf of the user, default is email and profile
-            webClientId: '319044518777-uu2cqpvf00kt5tklt22h2medp9bdveek.apps.googleusercontent.com', // client ID of type WEB for your server (needed to verify user ID and offline access)
-            offlineAccess: true, // if you want to access Google API on behalf of the user FROM YOUR SERVER
-            //hostedDomain: '', // specifies a hosted domain restriction
-            //loginHint: '', // [iOS] The user's ID, or email address, to be prefilled in the authentication UI if possible. [See docs here](https://developers.google.com/identity/sign-in/ios/api/interface_g_i_d_sign_in.html#a0a68c7504c31ab0b728432565f6e33fd)
-            forceCodeForRefreshToken: true, // [Android] related to `serverAuthCode`, read the docs link below *.
-            //accountName: '', // [Android] specifies an account name on the device that should be used
-            //iosClientId: '<FROM DEVELOPER CONSOLE>', // [iOS] optional, if you want to specify the client ID of type iOS (otherwise, it is taken from GoogleService-Info.plist)
-        });
-    }, [])
-    const signIn = async () => {
-        try {
-            await GoogleSignin.hasPlayServices();
-            const userInfo = await GoogleSignin.signIn();
-            //this.setState({ userInfo });
-            console.log({ userInfo })
-        } catch (error) {
-            console.log(error)
-            if (error.code === statusCodes.SIGN_IN_CANCELLED) {
-                // user cancelled the login flow
-            } else if (error.code === statusCodes.IN_PROGRESS) {
-                // operation (e.g. sign in) is in progress already
-            } else if (error.code === statusCodes.PLAY_SERVICES_NOT_AVAILABLE) {
-                // play services not available or outdated
-            } else {
-                // some other error happened
+
+    const LoginUser = () => {
+        auth()
+          .signInWithEmailAndPassword(email, senha)
+          .then(() => {
+            console.log('signed in!');
+            navigation.navigate('Main')
+          })
+          .catch(error => {
+            if (error.code === 'auth/email-already-in-use') {
+              console.log('That email address is already in use!');
             }
+    
+            if (error.code === 'auth/invalid-email') {
+              console.log('That email address is invalid!');
+            }
+    
+            console.error(error);
+          });
+    
+
+       
+
+        function App() {
+            // Set an initializing state whilst Firebase connects
+            const [initializing, setInitializing] = useState(true);
+            const [user, setUser] = useState();
+
+            // Handle user state changes
+            function onAuthStateChanged(user) {
+                setUser(user);
+                if (initializing) setInitializing(false);
+            }
+
+            useEffect(() => {
+                const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+                return subscriber; // unsubscribe on unmount
+            }, []);
+
+            if (initializing) return null;
+
+            if (!user) {
+                return (
+                    navigation.navigate('Login')
+                );
+            }
+
+            return (
+                navigation.navigate('Main')
+            );
         }
-    };
+
+    }
+
     return (
-        
+
         <KeyboardAvoidingView style={styles.background}>
             <View style={styles.logo}>
                 <Image
@@ -65,26 +82,19 @@ export default function Login({navigation}) {
                     placeholder="Digite sua senha"
                     autoCorrect={false}
                     secureTextEntry={true}
-                    onChangeText={(senha) => {setSenha(senha) }}
+                    onChangeText={(senha) => { setSenha(senha) }}
                 />
 
-                <TouchableOpacity style={styles.btnAcess}>
+                <TouchableOpacity style={styles.btnAcess} onPress={LoginUser}>
                     <Text style={styles.btnText}>Acessar</Text>
-                </TouchableOpacity>           
+                </TouchableOpacity>
 
                 <TouchableOpacity
-                    onPress = {() => navigation.navigate('Cadastro')}                >
+                    onPress={() => navigation.navigate('Cadastro')}
+                >
                     <Text style={styles.btnRegistrar}>Criar uma conta</Text>
-                </TouchableOpacity>
-                
-                <Text style={styles.text}>OU</Text>     
 
-                <GoogleSigninButton style={styles.btnGoogle}
-                    style={{ width: 340, height: 50 }}
-                    size={GoogleSigninButton.Size.Wide}
-                    color={GoogleSigninButton.Color.Dark}
-                    onPress={signIn}
-                 />
+                </TouchableOpacity>
             </View>
         </KeyboardAvoidingView>
     );
@@ -127,7 +137,7 @@ const styles = StyleSheet.create({
         color: '#FFF',
         fontSize: 18,
     },
-    btnRegistrar:{
+    btnRegistrar: {
         fontSize: 21
     },
 

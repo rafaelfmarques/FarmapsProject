@@ -1,21 +1,21 @@
 {
   "project_info": {
-    "project_number": "319044518777",
-    "firebase_url": "https://projetofarmacia-fa008.firebaseio.com",
-    "project_id": "projetofarmacia-fa008",
-    "storage_bucket": "projetofarmacia-fa008.appspot.com"
+    "project_number": "218872982737",
+    "firebase_url": "https://projetofarmacia-ac098.firebaseio.com",
+    "project_id": "projetofarmacia-ac098",
+    "storage_bucket": "projetofarmacia-ac098.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:319044518777:android:31c2038fcd03d5c356a5a8",
+        "mobilesdk_app_id": "1:218872982737:android:c0f580ac83a5e841d5e9f0",
         "android_client_info": {
           "package_name": "com.projetofarmacia"
         }
       },
       "oauth_client": [
         {
-          "client_id": "319044518777-l1ipr8fdsdbpqqk549u3a670so2944e2.apps.googleusercontent.com",
+          "client_id": "218872982737-o0ref6vq828j0h4betd2fcr1ajhm1k7r.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.projetofarmacia",
@@ -23,20 +23,20 @@
           }
         },
         {
-          "client_id": "319044518777-uu2cqpvf00kt5tklt22h2medp9bdveek.apps.googleusercontent.com",
+          "client_id": "218872982737-mfu98euilcj0npkpqd8lo8uioisa459s.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBPGC7sUnc5uN9N3FTa4wouKoVkYW_te3I"
+          "current_key": "AIzaSyA5UJJz4majASWn-9f2lYVdZyBAE2ruHjg"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "319044518777-uu2cqpvf00kt5tklt22h2medp9bdveek.apps.googleusercontent.com",
+              "client_id": "218872982737-mfu98euilcj0npkpqd8lo8uioisa459s.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

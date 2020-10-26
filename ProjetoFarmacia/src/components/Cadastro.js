@@ -1,61 +1,73 @@
-import React, { useRef } from 'react';
-import { Form } from '@unform/mobile';
-import { Scope } from '@unform/core';
-import { 
-  StyleSheet, 
-  Text, 
-  Image, 
-  KeyboardAvoidingView, 
-  TouchableWithoutFeedback, 
-  Platform, 
+import React, { useState } from 'react';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  Image,
+  KeyboardAvoidingView,
   View,
-  StatusBar,
   TouchableOpacity,
 } from 'react-native';
-import Input from './InputForm';
 
-export default function App() {
-  const formRef = useRef(null);
+import auth from '@react-native-firebase/auth';
 
-  function handleSubmit(data, { reset }) {
-    console.log(data);
 
-    reset();
+export default function Cadastro({ navigation }) {
+  const [email, setEmail] = useState('')
+  const [senha, setSenha] = useState('')
+
+  const createUser = () => {
+    auth()
+      .createUserWithEmailAndPassword(email, senha)
+      .then(() => {
+        console.log('User account created & signed in!');
+        navigation.navigate('Main')
+      })
+      .catch(error => {
+        if (error.code === 'auth/email-already-in-use') {
+          console.log('That email address is already in use!');
+        }
+
+        if (error.code === 'auth/invalid-email') {
+          console.log('That email address is invalid!');
+        }
+
+        console.error(error);
+      });
   }
 
+
+
   return (
-    <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : null} style={styles.container}>
+    <KeyboardAvoidingView style={styles.container}>
       <View>
-        <StatusBar barStyle="dark-content" />
 
-        <Form ref={formRef} onSubmit={handleSubmit}>
-          <Image 
-            style={styles.logo} 
-            source={require('../assets/logo.png')}
-          />
+        <Image
+          style={styles.logo}
+          source={require('../assets/logo.png')}
+        />
 
-          <Input name="name" label="Nome completo" placeholder="Digite seu nome" style={styles.input}  />
-          <Input style={styles.input}
-            name="email" 
-            label="E-mail" 
-            autoCorrect={false}
-            placeholder="Digite seu e-mail"
-            autoCapitalize="none"
-            keyboardType="email-address"
-          />
+        <TextInput style={styles.input}
+          placeholder="Digite seu e-mail"
+          autoCorrect={false}
+          onChangeText={(email) => { setEmail(email) }}
+        />
 
-          <Scope path="address">
-            <Input name="street" label="Senha" placeholder="Digite sua senha" style={styles.input} />
-          </Scope>
+        <TextInput style={styles.input}
+          placeholder="Digite sua senha"
+          autoCorrect={false}
+          secureTextEntry={true}
+          onChangeText={(senha) => { setSenha(senha) }}
+        />
 
-          <TouchableOpacity style={styles.submitButton} onPress={() => formRef.current.submitForm()}>
-            <Text style={styles.submitButtonText}>Cadastrar</Text>
-          </TouchableOpacity>
-        </Form>
+        <TouchableOpacity style={styles.submitButton} onPress={createUser}>
+          <Text style={styles.submitButtonText}>Cadastrar</Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -79,11 +91,12 @@ const styles = StyleSheet.create({
     fontSize: 17,
     borderRadius: 7,
     padding: 10,
-},
+  },
 
   submitButton: {
     backgroundColor: '#111',
     borderRadius: 4,
+    width: 350,
     padding: 16,
     alignItems: 'center'
   },
@@ -94,3 +107,4 @@ const styles = StyleSheet.create({
     fontSize: 15,
   },
 });
+
