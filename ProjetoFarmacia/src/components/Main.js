@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 
 import auth from '@react-native-firebase/auth';
 import {PermissionsAndroid, Alert, StyleSheet, Text, View, TouchableOpacity } from 'react-native';
@@ -8,8 +8,6 @@ import geolocation from '@react-native-community/geolocation';
 
 import MapView, {Marker, PROVIDER_GOOGLE } from 'react-native-maps'; // remove PROVIDER_GOOGLE import if not using Google Maps
 import { Component } from 'react/cjs/react.production.min';
-
-
 
 export default function Main () {
  
@@ -28,7 +26,7 @@ export default function Main () {
         }
       )
       if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-        findCoordinates()
+        findCoordinates();
       } else {
         console.log("location permission denied")
         alert("Location permission denied");
@@ -37,35 +35,34 @@ export default function Main () {
       console.warn(err)
     }
   }
-
-    
-   const findCoordinates = () => {
+  const findCoordinates = () => {
     geolocation.getCurrentPosition(
       position => {
         const lat = position.coords.latitude;
         const long = position.coords.longitude;
-        setLatitude(lat),
-        setLongitude(long)
+        setLatitude(lat);
+        setLongitude(long);
       },
       error => Alert.alert(error.message),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     );
   };
 
-  const getPlacesUrl = (lat, long, radius, type, apiKey) => {
-    const baseUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?`;
-    const location = `location=${lat},${long}&radius=${radius}`;
-    const typeData = `&types=${type}`;
-    const api = `&key=${apiKey}`;
-    return `${baseUrl}${location}${typeData}${api}`;
+    const getPlacesUrl = (lat, long, radius, type, apiKey) => {
+      const baseUrl = `https://maps.googleapis.com/maps/api/place/nearbysearch/json?`;
+      const location = `location=${lat},${long}&radius=${radius}`;
+      const typeData = `&types=${type}`;
+      const api = `&key=${apiKey}`;
+      return `${baseUrl}${location}${typeData}${api}`;
   }
 
-  const getPlaces = () => {
+  const fetchPlaces = async () => {
     const markers = [];
-    const url = getPlacesUrl(latitude, longitude, 1500, "pharmacy", "pega-sua-chave-kk");
-    fetch(url)
-      .then(res => res.json())
-      .then(res => {
+    const url = getPlacesUrl(latitude, longitude, 1000, "pharmacy", "chave-api");
+    const res = await fetch(url);
+    res
+      .json()
+      .then( res => {
         res.results.map((element, index) => {
           const marketObj = {};
           marketObj.id = element.id;
@@ -80,17 +77,19 @@ export default function Main () {
 
           markers.push(marketObj);
         });
-        setPlaces(markers);
       });
+      setPlaces(markers);
   }
 
   useEffect(() => {
-    requestLocation()
-    getPlaces();
+    requestLocation();
+    
+    setTimeout(function () {
+      fetchPlaces();
+    }, 999000);
     // alert("lat = " +latitude + " long = " + longitude);
-//    alert(places[1].name);
+  //  alert(places[1].name); 
   }, []);
-
     
     return (
       <View style={styles.container}>
@@ -112,7 +111,7 @@ export default function Main () {
             showsIndoors={true}
         >
           {places.map((marker, i) => (
-              <Marker
+              <MapView.Marker
                 key={i}
                 coordinate={{
                   latitude: marker.marker.latitude,
@@ -121,6 +120,7 @@ export default function Main () {
                 title={marker.name}
               />
             ))}
+          
         </MapView>
 
         {/*<TouchableOpacity style={styles.welcome} onPress={signOut}>
