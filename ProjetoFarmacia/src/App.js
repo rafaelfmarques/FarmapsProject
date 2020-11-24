@@ -13,6 +13,7 @@ import Cadastro from './components/Cadastro';
 import Main from './components/Main';
 import Logout from './components/Logout';
 import Detalhes from './components/Detalhes';
+import MapView from './components/MapView';
 
 export default function App() {
   const Stack = createStackNavigator();
@@ -21,7 +22,7 @@ export default function App() {
   myTabs = () => {
     return (
       <Tab.Navigator>
-        <Tab.Screen name='Main' component={Main}/>
+        <Tab.Screen name='Main' component={MapView}/>
         <Tab.Screen name='Detalhes' component={Detalhes}/>
         <Tab.Screen name='Logout' component={Logout}/>
       </Tab.Navigator>
